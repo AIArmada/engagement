@@ -14,8 +14,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $jsonType = config('interactions.database.json_column_type', 'jsonb');
-        Schema::create(config('interactions.database.tables.bookmark_collection_items', 'bookmark_collection_items'), function (Blueprint $table) use ($jsonType): void {
+        $jsonType = config('engagement.database.json_column_type', 'jsonb');
+        Schema::create(config('engagement.database.tables.bookmark_collection_items', 'bookmark_collection_items'), function (Blueprint $table) use ($jsonType): void {
             $table->uuid('id')->primary();
             $table->uuid('bookmark_collection_id')->index();
             $table->uuid('bookmark_id')->index();
@@ -27,8 +27,5 @@ return new class extends Migration
             $table->timestampsTz();
         });
     }
-    public function down(): void
-    {
-        Schema::dropIfExists(config('interactions.database.tables.bookmark_collection_items', 'bookmark_collection_items'));
-    }
+
 };

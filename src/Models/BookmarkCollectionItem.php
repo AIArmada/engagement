@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\BookmarkCollectionItemFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -24,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 final class BookmarkCollectionItem extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     protected $fillable = [
@@ -46,7 +49,7 @@ final class BookmarkCollectionItem extends Model
      */
     public function collection(): BelongsTo
     {
-        return $this->belongsTo(BookmarkCollection::class);
+        return $this->belongsTo(BookmarkCollection::class, 'bookmark_collection_id');
     }
 
     /**
@@ -67,5 +70,10 @@ final class BookmarkCollectionItem extends Model
             'added_at' => 'immutable_datetime',
             'removed_at' => 'immutable_datetime',
         ];
+    }
+
+    protected static function newFactory(): BookmarkCollectionItemFactory
+    {
+        return BookmarkCollectionItemFactory::new();
     }
 }

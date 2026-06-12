@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\EngagementCounterFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -22,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class EngagementCounter extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     protected $fillable = [
@@ -57,5 +60,10 @@ final class EngagementCounter extends Model
             'metadata' => 'array',
             'recalculated_at' => 'immutable_datetime',
         ];
+    }
+
+    protected static function newFactory(): EngagementCounterFactory
+    {
+        return EngagementCounterFactory::new();
     }
 }

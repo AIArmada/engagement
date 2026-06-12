@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\ReactionFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -26,6 +28,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Reaction extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_ACTIVE = 'active';
@@ -116,5 +119,10 @@ final class Reaction extends Model
             'reacted_at' => 'immutable_datetime',
             'removed_at' => 'immutable_datetime',
         ];
+    }
+
+    protected static function newFactory(): ReactionFactory
+    {
+        return ReactionFactory::new();
     }
 }

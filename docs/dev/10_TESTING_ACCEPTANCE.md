@@ -24,8 +24,8 @@
 - [ ] User can bookmark any Bookmarkable model. (implementation exists, no tests)
 - [ ] User can remove bookmark without row deletion. (implementation exists, no tests)
 - [ ] User can archive bookmark. (archiveBookmark in EngagementManager)
-- [ ] User can add bookmark to collection. (not implemented in EngagementManager)
-- [ ] One bookmark can appear in multiple collections. (schema supports it via bookmark_collection_items, but no service method)
+- [ ] User can add bookmark to collection. (implemented in EngagementManager, no test written)
+- [ ] One bookmark can appear in multiple collections. (addBookmarkToCollection + removeBookmarkFromCollection exist, no test written)
 
 ## Response tests
 

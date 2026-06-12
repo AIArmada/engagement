@@ -1,6 +1,17 @@
 <?php
 
 declare(strict_types=1);
+use AIArmada\Engagement\Models\Bookmark;
+use AIArmada\Engagement\Models\BookmarkCollection;
+use AIArmada\Engagement\Models\BookmarkCollectionItem;
+use AIArmada\Engagement\Models\EngagementCounter;
+use AIArmada\Engagement\Models\Follow;
+use AIArmada\Engagement\Models\Reaction;
+use AIArmada\Engagement\Models\Reminder;
+use AIArmada\Engagement\Models\Response;
+use AIArmada\Engagement\Models\Share;
+use AIArmada\Engagement\Models\Subscription;
+use AIArmada\Engagement\Notifications\EngagementReminderNotification;
 
 $tablePrefix = env('ENGAGEMENT_TABLE_PREFIX', 'engagement_');
 
@@ -30,6 +41,13 @@ return [
         'response_visibility' => env('ENGAGEMENT_DEFAULT_RESPONSE_VISIBILITY', 'public'),
     ],
 
+    /* Owner */
+    'owner' => [
+        'enabled' => env('ENGAGEMENT_OWNER_ENABLED', true),
+        'include_global' => env('ENGAGEMENT_OWNER_INCLUDE_GLOBAL', false),
+        'auto_assign_on_create' => env('ENGAGEMENT_OWNER_AUTO_ASSIGN', true),
+    ],
+
     /* Reminder */
     'reminder' => [
         'batch_size' => (int) env('ENGAGEMENT_REMINDER_BATCH_SIZE', 100),
@@ -43,20 +61,20 @@ return [
 
     /* Notifications */
     'notifications' => [
-        'reminder' => env('ENGAGEMENT_NOTIFICATION_REMINDER_CLASS', \AIArmada\Engagement\Notifications\EngagementReminderNotification::class),
+        'reminder' => env('ENGAGEMENT_NOTIFICATION_REMINDER_CLASS', EngagementReminderNotification::class),
     ],
 
     /* Model class overrides */
     'models' => [
-        'follow' => AIArmada\Engagement\Models\Follow::class,
-        'bookmark' => AIArmada\Engagement\Models\Bookmark::class,
-        'bookmark_collection' => AIArmada\Engagement\Models\BookmarkCollection::class,
-        'bookmark_collection_item' => AIArmada\Engagement\Models\BookmarkCollectionItem::class,
-        'response' => AIArmada\Engagement\Models\Response::class,
-        'reaction' => AIArmada\Engagement\Models\Reaction::class,
-        'subscription' => AIArmada\Engagement\Models\Subscription::class,
-        'reminder' => AIArmada\Engagement\Models\Reminder::class,
-        'share' => AIArmada\Engagement\Models\Share::class,
-        'interaction_counter' => AIArmada\Engagement\Models\InteractionCounter::class,
+        'follow' => Follow::class,
+        'bookmark' => Bookmark::class,
+        'bookmark_collection' => BookmarkCollection::class,
+        'bookmark_collection_item' => BookmarkCollectionItem::class,
+        'response' => Response::class,
+        'reaction' => Reaction::class,
+        'subscription' => Subscription::class,
+        'reminder' => Reminder::class,
+        'share' => Share::class,
+        'engagement_counter' => EngagementCounter::class,
     ],
 ];

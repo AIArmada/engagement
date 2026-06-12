@@ -10,6 +10,7 @@ use AIArmada\Engagement\Models\Follow;
 use AIArmada\Engagement\Models\EngagementCounter;
 use AIArmada\Engagement\Models\Reaction;
 use AIArmada\Engagement\Models\Response;
+use Carbon\CarbonImmutable;
 
 final class DefaultEngagementCounterService implements EngagementCounterService
 {
@@ -81,7 +82,7 @@ final class DefaultEngagementCounterService implements EngagementCounterService
                 ],
                 [
                     'count_value' => $count,
-                    'recalculated_at' => now(),
+                    'recalculated_at' => CarbonImmutable::now(),
                 ],
             );
         }

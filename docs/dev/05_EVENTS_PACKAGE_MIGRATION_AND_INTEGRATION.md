@@ -285,14 +285,14 @@ If Interactions package is absent, these widgets/actions must hide or show zero 
 
 ## Migration checklist for Events package
 
-- [ ] Remove `event_responses` migration. (still present in events package)
-- [ ] Remove `event_subscriptions` migration. (still present in events package)
-- [ ] Remove `event_reminders` migration. (still present in events package)
-- [ ] Remove generic follows/bookmarks/reactions from Events docs and migrations. (still present)
-- [ ] Remove interaction analytics logs from Events docs and migrations. (still present)
+- [x] Remove `event_responses` migration from Events. (done)
+- [x] Remove `event_subscriptions` migration from Events. (done)
+- [x] Remove `event_reminders` migration from Events. (done)
+- [x] Remove generic follows/bookmarks/reactions from Events docs/migrations. (done)
+- [x] Remove interaction analytics logs from Events docs/migrations. (done)
 - [x] Add `EventEngagementManager` contract. (packages/events/src/Contracts/)
 - [x] Add `NullEventEngagementManager`. (packages/events/src/Integrations/)
-- [x] Add optional Interactions adapter binding using `class_exists()`. (EventsServiceProvider)
+- [x] Add optional Engagement adapter binding using `class_exists()`. (EventsServiceProvider)
 - [ ] Update Filament event pages to use the contract instead of direct tables. (Filament not built)
-- [ ] Update Events README to point interaction concerns to Interactions package.
-- [ ] Add upgrade notes explaining where moved concepts now live.
+- [ ] Update Events README to reference Engagement package. (not done)
+- [ ] Add upgrade notes explaining where moved concepts now live. (not done)

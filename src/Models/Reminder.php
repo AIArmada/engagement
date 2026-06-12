@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\ReminderFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -35,6 +37,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Reminder extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_PENDING = 'pending';
@@ -145,5 +148,10 @@ final class Reminder extends Model
             'failed_at' => 'immutable_datetime',
             'expires_at' => 'immutable_datetime',
         ];
+    }
+
+    protected static function newFactory(): ReminderFactory
+    {
+        return ReminderFactory::new();
     }
 }

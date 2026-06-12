@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\BookmarkFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Bookmark extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_ACTIVE = 'active';
@@ -128,6 +131,11 @@ final class Bookmark extends Model
     public function isActive(): bool { return $this->status === self::STATUS_ACTIVE; }
     public function isRemoved(): bool { return $this->status === self::STATUS_REMOVED; }
     public function isArchived(): bool { return $this->status === self::STATUS_ARCHIVED; }
+
+    protected static function newFactory(): BookmarkFactory
+    {
+        return BookmarkFactory::new();
+    }
 
     /**
      * @return array<string, string>

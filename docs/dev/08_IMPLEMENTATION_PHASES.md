@@ -44,7 +44,7 @@ Tasks:
 - [x] Add casts for JSON and timestamps.
 - [x] Add scopes.
 - [x] Add lifecycle methods. (constants for status codes)
-- [ ] Add model factories. (not created)
+- [x] Add model factories. (10 factories for all Engagement models)
 - [x] Add constants/classes for status codes.
 - [x] Ensure no soft delete trait is used.
 

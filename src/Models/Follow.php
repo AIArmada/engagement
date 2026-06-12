@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\FollowFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Follow extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_ACTIVE = 'active';
@@ -132,6 +135,11 @@ final class Follow extends Model
     public function isActive(): bool { return $this->status === self::STATUS_ACTIVE; }
     public function isMuted(): bool { return $this->status === self::STATUS_MUTED; }
     public function isUnfollowed(): bool { return $this->status === self::STATUS_UNFOLLOWED; }
+
+    protected static function newFactory(): FollowFactory
+    {
+        return FollowFactory::new();
+    }
 
     /**
      * @return array<string, string>

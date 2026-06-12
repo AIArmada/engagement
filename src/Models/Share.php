@@ -1,8 +1,10 @@
 <?php
 declare(strict_types=1);
 namespace AIArmada\Engagement\Models;
+use AIArmada\Engagement\Database\Factories\ShareFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -30,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Share extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_CREATED = 'created';
@@ -76,5 +79,10 @@ final class Share extends Model
             'expired_at' => 'immutable_datetime',
             'failed_at' => 'immutable_datetime',
         ];
+    }
+
+    protected static function newFactory(): ShareFactory
+    {
+        return ShareFactory::new();
     }
 }

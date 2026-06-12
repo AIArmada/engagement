@@ -10,10 +10,10 @@ use AIArmada\Engagement\Events\SubscriptionCancelled;
 use AIArmada\Engagement\Events\SubscriptionCreated;
 use AIArmada\Engagement\Events\SubscriptionMatched;
 use AIArmada\Engagement\Events\SubscriptionMuted;
-use AIArmada\Engagement\Events\SubscriptionUnmuted;
 use AIArmada\Engagement\Models\Subscription;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Builder;
+use InvalidArgumentException;
 
 final class DefaultSubscriptionManager implements SubscriptionManager
 {
@@ -25,29 +25,17 @@ final class DefaultSubscriptionManager implements SubscriptionManager
     {
         $this->policy->canSubscribe($subscriber, $subject, $subscriptionType);
 
-        $query = Subscription::query()
-            ->where('subscriber_type', $subscriber->getMorphClass())
-            ->where('subscriber_id', $subscriber->getKey())
-            ->where('subscription_type', $subscriptionType);
+        $criteria = $this->normalizeCriteria($criteria);
 
-        if ($subject !== null) {
-            $query
-                ->where('subscribable_type', $subject->getMorphClass())
-                ->where('subscribable_id', $subject->getKey());
-        } else {
-                $query->whereNull('subscribable_type')
-                    ->whereNull('subscribable_id');
+        $existing = $this->findMatchingSubscription($subscriber, $subject, $subscriptionType, $criteria);
+
+        if ($existing !== null) {
+            if ($existing->status === Subscription::STATUS_ACTIVE) {
+                return $existing;
             }
 
-        $existing = $query->first();
-
-        if ($existing && $existing->status === 'active') {
-            return $existing;
-        }
-
-        if ($existing) {
             $existing->update([
-                'status' => 'active',
+                'status' => Subscription::STATUS_ACTIVE,
                 'criteria' => $criteria,
                 'unsubscribed_at' => null,
                 'subscribed_at' => CarbonImmutable::now(),
@@ -80,24 +68,15 @@ final class DefaultSubscriptionManager implements SubscriptionManager
 
     public function unsubscribe(mixed $subscriber, mixed $subject = null, string $subscriptionType = 'updates', array $criteria = []): void
     {
-        $query = Subscription::query()
-            ->where('subscriber_type', $subscriber->getMorphClass())
-            ->where('subscriber_id', $subscriber->getKey())
-            ->where('subscription_type', $subscriptionType)
-            ->where('status', 'active');
+        $subscription = $this->findMatchingSubscription(
+            $subscriber,
+            $subject,
+            $subscriptionType,
+            $this->normalizeCriteria($criteria),
+            Subscription::STATUS_ACTIVE,
+        );
 
-        if ($subject !== null) {
-            $query
-                ->where('subscribable_type', $subject->getMorphClass())
-                ->where('subscribable_id', $subject->getKey());
-        } else {
-                $query->whereNull('subscribable_type')
-                    ->whereNull('subscribable_id');
-            }
-
-        $subscription = $query->first();
-
-        if ($subscription) {
+        if ($subscription !== null) {
             $subscription->update(['status' => 'unsubscribed', 'unsubscribed_at' => CarbonImmutable::now()]);
             event(new SubscriptionCancelled($subscription));
         }
@@ -115,6 +94,7 @@ final class DefaultSubscriptionManager implements SubscriptionManager
     {
         $subjectType = $subject->getMorphClass();
         $subjectId = $subject->getKey();
+        $context = $this->normalizeCriteria($context);
 
         $subscriptions = Subscription::query()
             ->where('status', 'active')
@@ -132,9 +112,126 @@ final class DefaultSubscriptionManager implements SubscriptionManager
             ->cursor();
 
         foreach ($subscriptions as $subscription) {
+            if (! $this->criteriaMatches($subscription->criteria ?? [], $context)) {
+                continue;
+            }
+
             event(new SubscriptionMatched($subscription, $subject, $trigger));
 
             yield $subscription;
         }
+    }
+
+    private function findMatchingSubscription(
+        mixed $subscriber,
+        mixed $subject,
+        string $subscriptionType,
+        array $criteria,
+        ?string $status = null,
+    ): ?Subscription {
+        $query = Subscription::query()
+            ->where('subscriber_type', $this->morphClass($subscriber))
+            ->where('subscriber_id', $this->morphKey($subscriber))
+            ->where('subscription_type', $subscriptionType);
+
+        if ($status !== null) {
+            $query->where('status', $status);
+        }
+
+        if ($subject !== null) {
+            $query
+                ->where('subscribable_type', $this->morphClass($subject))
+                ->where('subscribable_id', $this->morphKey($subject));
+        } else {
+            $query->whereNull('subscribable_type')
+                ->whereNull('subscribable_id');
+        }
+
+        foreach ($query->get() as $subscription) {
+            if ($this->criteriaEquals($subscription->criteria ?? [], $criteria)) {
+                return $subscription;
+            }
+        }
+
+        return null;
+    }
+
+    private function morphClass(mixed $model): string
+    {
+        if (! is_object($model) || ! method_exists($model, 'getMorphClass')) {
+            throw new InvalidArgumentException('Subscriptions require morphable subscriber and subject models.');
+        }
+
+        return $model->getMorphClass();
+    }
+
+    private function morphKey(mixed $model): string
+    {
+        if (! is_object($model) || ! method_exists($model, 'getKey')) {
+            throw new InvalidArgumentException('Subscriptions require morphable subscriber and subject models.');
+        }
+
+        return (string) $model->getKey();
+    }
+
+    /**
+     * @param array<string|int, mixed> $data
+     * @return array<string|int, mixed>
+     */
+    private function normalizeCriteria(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->normalizeCriteria($value);
+            }
+        }
+
+        if ($this->isAssociativeArray($data)) {
+            ksort($data);
+        }
+
+        return $data;
+    }
+
+    private function criteriaEquals(array $left, array $right): bool
+    {
+        return $this->normalizeCriteria($left) === $this->normalizeCriteria($right);
+    }
+
+    /**
+     * @param array<string|int, mixed> $criteria
+     * @param array<string|int, mixed> $context
+     */
+    private function criteriaMatches(array $criteria, array $context): bool
+    {
+        foreach ($criteria as $key => $value) {
+            if (! array_key_exists($key, $context)) {
+                return false;
+            }
+
+            $contextValue = $context[$key];
+
+            if (is_array($value) && is_array($contextValue)) {
+                if (! $this->criteriaMatches($value, $contextValue)) {
+                    return false;
+                }
+
+                continue;
+            }
+
+            if ($contextValue !== $value) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param array<string|int, mixed> $data
+     */
+    private function isAssociativeArray(array $data): bool
+    {
+        return $data !== [] && array_keys($data) !== range(0, count($data) - 1);
     }
 }

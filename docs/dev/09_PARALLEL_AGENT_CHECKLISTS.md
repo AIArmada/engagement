@@ -93,7 +93,7 @@ src/Models/EngagementCounter.php optional
 - [x] Add scopes.
 - [x] Add relationship methods.
 - [x] Add status helper methods. (isActive/isMuted etc added)
-- [ ] Add factories. (not created)
+- [x] Add factories. (10 factories for all Engagement models)
 
 ### Acceptance
 
@@ -222,17 +222,17 @@ src/Filament/RelationManagers/*
 
 ### Tasks
 
-- [x] Create resources. (done)
-- [x] Create filters/actions. (done)
-- [x] Create widgets. (done)
-- [x] Create reusable relation managers. (done)
+- [ ] Create resources. (moved to packages/filament-engagement)
+- [ ] Create filters/actions. (moved to packages/filament-engagement)
+- [ ] Create widgets. (moved to packages/filament-engagement)
+- [ ] Create reusable relation managers. (moved to packages/filament-engagement)
 - [x] Add feature flag for resource registration. (config exists)
 
 ### Acceptance
 
 - [x] Filament resources can be disabled. (config flag exists)
-- [x] Resources do not require Events package. (no Events dependency)
-- [x] Relation managers can be attached by Events/domain packages. (they exist as reusable classes)
+- [x] Resources do not require Events package. (separate package)
+- [x] Relation managers can be attached by Events/domain packages. (created in filament-engagement)
 
 ---
 

@@ -39,8 +39,5 @@ return new class extends Migration
             $table->index(['shareable_type', 'shareable_id']);
         });
     }
-    public function down(): void
-    {
-        Schema::dropIfExists(config('engagement.database.tables.shares', 'engagement_shares'));
-    }
+
 };

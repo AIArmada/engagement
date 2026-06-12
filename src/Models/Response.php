@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\ResponseFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -29,6 +31,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Response extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_ACTIVE = 'active';
@@ -122,6 +125,11 @@ final class Response extends Model
 
     public function isActive(): bool { return $this->status === self::STATUS_ACTIVE; }
     public function isCancelled(): bool { return $this->status === self::STATUS_CANCELLED; }
+
+    protected static function newFactory(): ResponseFactory
+    {
+        return ResponseFactory::new();
+    }
 
     /**
      * @return array<string, string>

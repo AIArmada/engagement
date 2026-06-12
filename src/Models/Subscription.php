@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace AIArmada\Engagement\Models;
 
+use AIArmada\Engagement\Database\Factories\SubscriptionFactory;
 use AIArmada\Engagement\Models\Concerns\UsesEngagementUuid;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  */
 final class Subscription extends Model
 {
+    use HasFactory;
     use UsesEngagementUuid;
 
     public const STATUS_ACTIVE = 'active';
@@ -118,6 +121,11 @@ final class Subscription extends Model
     public function isActive(): bool { return $this->status === self::STATUS_ACTIVE; }
     public function isMuted(): bool { return $this->status === self::STATUS_MUTED; }
     public function isUnsubscribed(): bool { return $this->status === self::STATUS_UNSUBSCRIBED; }
+
+    protected static function newFactory(): SubscriptionFactory
+    {
+        return SubscriptionFactory::new();
+    }
 
     /**
      * @return array<string, string>
