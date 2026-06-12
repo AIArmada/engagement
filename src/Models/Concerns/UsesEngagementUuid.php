@@ -8,13 +8,19 @@ use Illuminate\Support\Str;
 
 trait UsesEngagementUuid
 {
-    public $incrementing = false;
+    public function getIncrementing(): bool
+    {
+        return false;
+    }
 
-    protected $keyType = 'string';
+    public function getKeyType(): string
+    {
+        return 'string';
+    }
 
     protected static function bootUsesEngagementUuid(): void
     {
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             if (! $model->getKey()) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
