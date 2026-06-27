@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Creates the engagement_follows table.
+ * Creates the engagement_subscriptions table.
  * Part of the aiarmada/engagement package.
  *
  * @see https://github.com/aiarmada/engagement/docs
@@ -16,25 +16,26 @@ return new class extends Migration
     public function up(): void
     {
         $jsonType = config('engagement.database.json_column_type', 'jsonb');
-        Schema::create(config('engagement.database.tables.follows', 'follows'), function (Blueprint $table) use ($jsonType): void {
+        Schema::create(config('engagement.database.tables.subscriptions', 'subscriptions'), function (Blueprint $table) use ($jsonType): void {
             $table->uuid('id')->primary();
-            $table->string('follower_type')->index();
-            $table->uuid('follower_id')->index();
-            $table->index(['follower_type', 'follower_id']);
-            $table->string('followable_type')->index();
-            $table->uuid('followable_id')->index();
-            $table->index(['followable_type', 'followable_id']);
+            $table->string('subscriber_type')->index();
+            $table->uuid('subscriber_id')->index();
+            $table->index(['subscriber_type', 'subscriber_id']);
+            $table->string('subscribable_type')->nullable()->index();
+            $table->uuid('subscribable_id')->nullable()->index();
+            $table->string('subscription_type')->index();
             $table->string('status')->index();
+            $table->{$jsonType}('criteria')->nullable();
             $table->string('notification_level')->nullable()->index();
             $table->{$jsonType}('notification_preferences')->nullable();
-            $table->timestampTz('followed_at')->nullable()->index();
+            $table->timestampTz('subscribed_at')->nullable()->index();
             $table->timestampTz('muted_at')->nullable();
-            $table->timestampTz('unfollowed_at')->nullable()->index();
-            $table->timestampTz('blocked_at')->nullable();
+            $table->timestampTz('unsubscribed_at')->nullable()->index();
+            $table->timestampTz('expires_at')->nullable()->index();
             $table->string('source')->nullable()->index();
             $table->{$jsonType}('metadata')->nullable();
+            $table->nullableMorphs('owner');
             $table->timestampsTz();
-            $table->index(['follower_type', 'follower_id', 'followable_type', 'followable_id', 'status']);
         });
     }
 };
