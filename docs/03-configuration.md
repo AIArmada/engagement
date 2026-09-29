@@ -11,7 +11,6 @@ The `config/engagement.php` file controls all Engagement package behavior.
 ```php
 'database' => [
     'table_prefix' => env('ENGAGEMENT_TABLE_PREFIX', 'engagement_'),
-    'json_column_type' => env('ENGAGEMENT_JSON_COLUMN_TYPE', 'jsonb'),
     'tables' => [
         'follows' => env('ENGAGEMENT_TABLE_FOLLOWS', $tablePrefix . 'follows'),
         'bookmarks' => env('ENGAGEMENT_TABLE_BOOKMARKS', $tablePrefix . 'bookmarks'),
@@ -27,9 +26,7 @@ The `config/engagement.php` file controls all Engagement package behavior.
 ]
 ```
 
-All table names are individually configurable via environment variables. Migrations resolve the
-JSON column type through `commerce_json_column_type('engagement', 'jsonb')`, which prefers
-`ENGAGEMENT_JSON_COLUMN_TYPE`, then the shared `COMMERCE_JSON_COLUMN_TYPE`, then this config value.
+All table names are individually configurable via environment variables.
 
 ### Defaults
 
@@ -72,7 +69,7 @@ Controls how many reminders are processed per scheduled run and which notificati
 
 ```php
 'notifications' => [
-    'reminder' => env('ENGAGEMENT_NOTIFICATION_REMINDER_CLASS', EngagementReminderNotification::class),
+    'reminder' => EngagementReminderNotification::class,
     'allowed' => [
         EngagementReminderNotification::class,
     ],

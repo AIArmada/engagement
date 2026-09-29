@@ -13,8 +13,7 @@ collection-item requests are protected by the identity unique indexes (folded
 into the package's create migrations) and transaction-level row locking. Make
 sure the package migrations have been run when deploying this behavior.
 
-> **warning**
->
+> [!WARNING]
 > Identity unique indexes include the nullable `owner_type`/`owner_id` columns.
 > MySQL treats `NULL` as distinct in unique indexes, so duplicate **global**
 > (ownerless) rows are still possible on MySQL for counters, follows,
@@ -53,12 +52,10 @@ add the class to the allowlist to deliver it.
 
 ### Subscriptions not matching
 
-`engagement:match-subscriptions` requires `{subjectType}` and `{subjectId}`, so it cannot be
-scheduled on its own. Invoke it from an application listener or job after a subject is
-published:
+Ensure the matching command is scheduled:
 
-```bash
-php artisan engagement:match-subscriptions "App\Models\Event" <event-uuid> --trigger=event_published
+```php
+Schedule::command('engagement:match-subscriptions')->hourly();
 ```
 
 Check that the subscription criteria (`criteria` JSON column) matches the data passed to `matchingSubscriptions()`.
